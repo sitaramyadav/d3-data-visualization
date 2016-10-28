@@ -54,9 +54,9 @@ var loadChart = function(quotes){
 		.text(function(q){
 			return 'Date: ' + q['Date'].toISOString().split('T')[0] + '\nPrice: ' + q['Close Price'];
 		})
-	
+
 	var circles = g.selectAll('circle');
-	
+
 	circles.attr('cx', function(q){return xScale(q['Date'])})
 		.attr('cy', function(q){return yScale(q['Close Price'])});
 
@@ -65,4 +65,3 @@ var loadChart = function(quotes){
 }
 
 d3.csv('../data/tataSteel.csv', parseQuote, loadChart);
-

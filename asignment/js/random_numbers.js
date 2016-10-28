@@ -35,31 +35,13 @@ var loadChart = function(){
 		.attr('transform', 'translate('+(MARGIN)+', '+ MARGIN +')')
 		.call(yAxis);
 
-	svg.append('g')
-		.attr('transform', 'translate('+(MARGIN)+', '+ MARGIN +')')
-		.call(yAxis);
+  var path = d3.selectAll('g');
 
-	var g = svg.append('g')
-		.attr('transform', 'translate('+MARGIN+', '+MARGIN+')');
-    var g = svg.append('g')
-    		.attr('transform', 'translate('+MARGIN+', '+MARGIN+')');
-
-    	g.selectAll('circle').data(random_numbers)
-    		.enter().append('circle')
-    		.attr('r', 5).append('title')
-    		.text(function(n){
-          return n;
-    		})
-
-    	var circles = g.selectAll('circle');
-    	circles.attr('cx', function(x){
-        return xScale(x);
-      })
-    		.attr('cy', function(y){
-          return yScale(y);
-        });
-
-    	g.selectAll('circle').exit().remove();
+  // var path = g.append('path').
+  //   .data(random_numbers)
+  //   attr(d,function(d){
+  //   return d;
+  // });
 
 }
 Window.load = loadChart();
