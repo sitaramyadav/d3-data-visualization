@@ -21,9 +21,7 @@ function render (data,color){
   var newSelection = dataBound.enter();
   //Enter + u
   newSelection.append('rect')
-  .attr('y',50)
-  .attr('width',20)
-  .attr('height',20);
+
 
 
   // Update
@@ -32,16 +30,29 @@ function render (data,color){
 
   modiefiedSelection
   .attr('x',function(d){return scale(d)})
-  .attr('fill',color);
+  .attr('fill',color)
+  .attr('y',50)
+  .attr('width',20)
+  .attr('height',20);
+//exit
 
+dataBound.exit().remove();
 
 }
 
-render([4],'red');
-render([1,2],'green')
-render([1,2,3,4,5,6],'blue')
-render([1,2,3,4,5,7,9],'red')
-render([1,2,3,4,5,5],'black')
+render([1,2,3],'red');
+setTimeout(function(){render([1,2,3,4],'green')},1000);
+setTimeout(function(){render([1,2],'blue')},2000)
+setTimeout(function(){render([1,2,3,8,9,10,100],'yellow')},3000)
+setTimeout(function(){render([1],'black')},4000)
+// setTimeout(function(){render([1,2,,10,20,30,40,50,67,78,88],'orange')},5000)
+// setTimeout(function(){render([1,2],'orange')},1000)
+
+
+
+// render([1,2,3,4,5,5],'black',setTimeout(function () {
+//
+// }, 1000));
 
 //         .domain([1,100])
 //         .range([500,30])
