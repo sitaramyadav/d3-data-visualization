@@ -16,22 +16,32 @@ var svg = d3.selectAll('.container')
 
 function render (data,color){
   //bind Data
-  var rects = svg.selectAll('rect').data(data);
-
-  //Enter
-  rects.enter().append('rect')
-  .attr('x',scale)
+  var existingSelection = svg.selectAll('rect');
+  var dataBound = existingSelection.data(data);
+  var newSelection = dataBound.enter();
+  //Enter + u
+  newSelection.append('rect')
   .attr('y',50)
   .attr('width',20)
-  .attr('height',20)
-  .attr('fill',color)
+  .attr('height',20);
+
+
+  // Update
+
+  var modiefiedSelection = svg.selectAll('rect');
+
+  modiefiedSelection
+  .attr('x',function(d){return scale(d)})
+  .attr('fill',color);
+
+
 }
 
-render([1],'red');
-render([1,2,],'green')
-render([1,2,3,4,7,5],'blue')
-// render([1,2,3,4,5,5],'red')
-// render([1,2,3,4,5,5],'black')
+render([4],'red');
+render([1,2],'green')
+render([1,2,3,4,5,6],'blue')
+render([1,2,3,4,5,7,9],'red')
+render([1,2,3,4,5,5],'black')
 
 //         .domain([1,100])
 //         .range([500,30])
