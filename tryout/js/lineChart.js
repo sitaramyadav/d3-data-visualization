@@ -3,7 +3,7 @@ const WIDTH = 1000;
 const HEIGHT = 700;
 // const MARGIN = 30;
 
-// var data = [1,29,34,34,56,56,45,56,89,100];
+// var randomNumbers = [1,29,34,34,56,56,45,56,89,100];
 
 var scale = d3.scaleLinear()
 .domain([1,5])
@@ -14,11 +14,11 @@ var svg = d3.selectAll('.container')
     .attr('height',250)
     .attr('width',250);
 
-function render (data,color){
-  //bind Data
+function render (randomNumbers,color){
+  //bind randomNumbers
   var existingSelection = svg.selectAll('rect');
-  var dataBound = existingSelection.data(data);
-  var newSelection = dataBound.enter();
+  var randomNumbersBound = existingSelection.randomNumbers(randomNumbers);
+  var newSelection = randomNumbersBound.enter();
   //Enter + u
   newSelection.append('rect')
 
@@ -36,7 +36,7 @@ function render (data,color){
   .attr('height',20);
 //exit
 
-dataBound.exit().remove();
+randomNumbersBound.exit().remove();
 
 }
 
@@ -58,9 +58,9 @@ setTimeout(function(){render([1],'black')},4000)
 //         .range([500,30])
 
 
-// var oldList = svg.selectAll('circle').data([]);
-// var dataBound = oldList.data(data);
-// var newList = dataBound.enter();
+// var oldList = svg.selectAll('circle').randomNumbers([]);
+// var randomNumbersBound = oldList.randomNumbers(randomNumbers);
+// var newList = randomNumbersBound.enter();
 //
 // newList.append('circle')
 //   .attr('r',4)

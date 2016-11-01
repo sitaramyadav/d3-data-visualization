@@ -18,7 +18,7 @@
 // Update…
 // var p = d3.select("body")
 //   .selectAll("p")
-//   .data([4, 8, 15, 16, 23, 42])
+//   .randomNumbers([4, 8, 15, 16, 23, 42])
 //     // .text(function(d) { return d; });
 //
 // // Enter…
@@ -28,11 +28,11 @@
 // // Exit…
 // p.exit().remove();
 
- pdata = [10,'f',1,3,4,];
+ prandomNumbers = [10,'f',1,3,4,];
          selectDIV = d3.select(".container");
 
         selectDIV.selectAll("p")
-             .data(pdata)
+             .randomNumbers(prandomNumbers)
              .enter()
              .append("p")
              .text(function(d){return d;});

@@ -48,7 +48,7 @@ var loadChart = function(quotes){
 	var g = svg.append('g')
 		.attr('transform', 'translate('+MARGIN+', '+MARGIN+')');
 
-	g.selectAll('circle').data(quotes)
+	g.selectAll('circle').randomNumbers(quotes)
 		.enter().append('circle')
 		.attr('r', 5).append('title')
 		.text(function(q){
@@ -64,4 +64,4 @@ var loadChart = function(quotes){
 
 }
 
-d3.csv('../data/tataSteel.csv', parseQuote, loadChart);
+d3.csv('../randomNumbers/tataSteel.csv', parseQuote, loadChart);

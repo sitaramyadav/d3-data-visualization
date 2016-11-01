@@ -1,0 +1,37 @@
+
+                                01
+
+      Drawing a moving horizontal bar chart. (using divs)
+      Start with a fixed array of numbers.
+      Every one second, remove the first number & add a new random number at the end.
+      Below are sample snapshots of how it will look at 0,1,2 and 3rd second.
+
+
+                              02
+
+      Solve the Excercise 01 with the elements having shades of blue.
+      Every new random number will also come in with a random shade of blue (the colour stays with it till it moves out).
+
+      Below are sample snapshots
+
+
+                                    03
+
+
+      Below are the student records to be used for this exercise:
+      [
+      	{name:'ramesh',subject:'maths',score:87},
+      	{name:'suresh',subject:'maths',score:45},
+      	{name:'pokemon',subject:'english',score:65},
+      	{name:'mary',subject:'kannada',score:44},
+      	{name:'riya',subject:'science',score:72},
+      	{name:'katie',subject:'social studies',score:82},
+      	{name:'katie',subject:'maths',score:98},
+      	{name:'ramesh',subject:'bengali',score:25},
+      	{name:'suresh',subject:'science',score:55},
+      	{name:'riya',subject:'tamil',score:75},
+      	{name:'pokemon',subject:'sports',score:95},
+      	{name:'pokemon',subject:'social studies',score:32}
+      ]
+
+      The initial screen should display:                                    
