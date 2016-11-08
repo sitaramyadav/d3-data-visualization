@@ -1,37 +1,58 @@
 
-                                01
+                    01
 
-      Drawing a moving horizontal bar chart. (using divs)
-      Start with a fixed array of numbers.
-      Every one second, remove the first number & add a new random number at the end.
-      Below are sample snapshots of how it will look at 0,1,2 and 3rd second.
-
-
-                              02
-
-      Solve the Excercise 01 with the elements having shades of blue.
-      Every new random number will also come in with a random shade of blue (the colour stays with it till it moves out).
-
-      Below are sample snapshots
+  Drawing a moving horizontal bar chart. (using divs)
+  Start with a fixed array of numbers.
+  Every one second, remove the first number & add a new random number at the end.
+  Below are sample snapshots of how it will look at 0,1,2 and 3rd second.
 
 
-                                    03
+                  02
+
+  Solve the Excercise 01 with the elements having shades of blue.
+  Every new random number will also come in with a random shade of blue (the colour stays with it till it moves out).
+
+  Below are sample snapshots
 
 
-      Below are the student records to be used for this exercise:
-      [
-      	{name:'ramesh',subject:'maths',score:87},
-      	{name:'suresh',subject:'maths',score:45},
-      	{name:'pokemon',subject:'english',score:65},
-      	{name:'mary',subject:'kannada',score:44},
-      	{name:'riya',subject:'science',score:72},
-      	{name:'katie',subject:'social studies',score:82},
-      	{name:'katie',subject:'maths',score:98},
-      	{name:'ramesh',subject:'bengali',score:25},
-      	{name:'suresh',subject:'science',score:55},
-      	{name:'riya',subject:'tamil',score:75},
-      	{name:'pokemon',subject:'sports',score:95},
-      	{name:'pokemon',subject:'social studies',score:32}
-      ]
+                                03
 
-      The initial screen should display:                                    
+
+  Below are the student records to be used for this exercise:
+  [
+  {name:'ramesh',subject:'maths',score:87},
+  {name:'suresh',subject:'maths',score:45},
+  {name:'pokemon',subject:'english',score:65},
+  {name:'mary',subject:'kannada',score:44},
+  {name:'riya',subject:'science',score:72},
+  {name:'katie',subject:'social studies',score:82},
+  {name:'katie',subject:'maths',score:98},
+  {name:'ramesh',subject:'bengali',score:25},
+  {name:'suresh',subject:'science',score:55},
+  {name:'riya',subject:'tamil',score:75},
+  {name:'pokemon',subject:'sports',score:95},
+  {name:'pokemon',subject:'social studies',score:32}
+  ]
+
+  The initial screen should display:
+
+
+                                04
+
+
+                          For n = 1 to 10 Generate a visual table.
+
+  The Heading Row will be Title, and numbers 1 to 10
+  The Second row will be "n" and values of n
+  The Third row will be "n square" and values of n square
+  The Fourth row will be "log(n)" and values of log(n)
+  The Fifth row will be "log(n) rounded" and values of log(n) rounded to the closest whole number"
+
+  PS: Read the requirement and prepare a rough chart yourself, before using someone's help to get clarity.
+  Have an idea (right or wrong) before seeking someone else's view.
+  It hard to get better at anything if you skip the hard parts.
+
+                              05
+
+  Show numbers 0 to 10 in a box. The font size of number 0 is 12px:30px and that of 10 is 120px:180px.
+  The below picture shows how it would look:
