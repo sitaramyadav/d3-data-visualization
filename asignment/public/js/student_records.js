@@ -44,13 +44,16 @@ var createChart = function (){
 
 	var display = d3.select('.container');
 
-	var existingSelection = display.selectAll('.bar').data(studentRecords,function(d){return d.name+ ' '+d.score;});
+	var existingSelection = display.selectAll('.bar')
+			.data(studentRecords,function(d){return d.name+ ' '+d.score;})
+			.style('text-align','center');
 
 
 	var newSelection = existingSelection.data(studentRecords);
 
-	newSelection.append('div')
+	var newS = newSelection.append('div')
 		.style('width',function(d){return xScale(d.score)+'px';})
+		.style('text-align','center')
 		.style('opacity',function(d){return d.score/100;})
 		.attr('class','bar')
 		.text(function(d){return d.score;})
