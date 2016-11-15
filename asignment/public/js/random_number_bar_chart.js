@@ -43,6 +43,7 @@ function createChart(){
 	var display = d3.select('.container');
 
 	var existingSelection = display.selectAll('.bar').randomNumbers(randomNumbers,function(d){return d.index;});
+	console.log(display)
 
 	generateRandomNumbers(randomNumbers);
 

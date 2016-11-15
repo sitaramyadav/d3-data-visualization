@@ -179,14 +179,14 @@ var histogram = function() {
       domain = extent,
       threshold = sturges;
 
-  function histogram(randomNumbers) {
+  function histogram(data) {
     var i,
-        n = randomNumbers.length,
+        n = data.length,
         x,
         values = new Array(n);
 
     for (i = 0; i < n; ++i) {
-      values[i] = value(randomNumbers[i], i, randomNumbers);
+      values[i] = value(data[i], i, data);
     }
 
     var xz = domain(values),
@@ -212,11 +212,11 @@ var histogram = function() {
       bin.x1 = i < m ? tz[i] : x1;
     }
 
-    // Assign randomNumbers to bins by value, ignoring any outside the domain.
+    // Assign data to bins by value, ignoring any outside the domain.
     for (i = 0; i < n; ++i) {
       x = values[i];
       if (x0 <= x && x <= x1) {
-        bins[bisectRight(tz, x, 0, m)].push(randomNumbers[i]);
+        bins[bisectRight(tz, x, 0, m)].push(data[i]);
       }
     }
 
@@ -1190,7 +1190,7 @@ function add(tree, x, y, d) {
 
   var parent,
       node = tree._root,
-      leaf = {randomNumbers: d},
+      leaf = {data: d},
       x0 = tree._x0,
       y0 = tree._y0,
       x1 = tree._x1,
@@ -1215,8 +1215,8 @@ function add(tree, x, y, d) {
   }
 
   // Is the new point is exactly coincident with the existing point?
-  xp = +tree._x.call(null, node.randomNumbers);
-  yp = +tree._y.call(null, node.randomNumbers);
+  xp = +tree._x.call(null, node.data);
+  yp = +tree._y.call(null, node.data);
   if (x === xp && y === yp) return leaf.next = node, parent ? parent[i] = leaf : tree._root = leaf, tree;
 
   // Otherwise, split the leaf node until the old and new point are separated.
@@ -1228,8 +1228,8 @@ function add(tree, x, y, d) {
   return parent[j] = node, parent[i] = leaf, tree;
 }
 
-function addAll(randomNumbers) {
-  var d, i, n = randomNumbers.length,
+function addAll(data) {
+  var d, i, n = data.length,
       x,
       y,
       xz = new Array(n),
@@ -1241,7 +1241,7 @@ function addAll(randomNumbers) {
 
   // Compute the points and their extent.
   for (i = 0; i < n; ++i) {
-    if (isNaN(x = +this._x.call(null, d = randomNumbers[i])) || isNaN(y = +this._y.call(null, d))) continue;
+    if (isNaN(x = +this._x.call(null, d = data[i])) || isNaN(y = +this._y.call(null, d))) continue;
     xz[i] = x;
     yz[i] = y;
     if (x < x0) x0 = x;
@@ -1259,7 +1259,7 @@ function addAll(randomNumbers) {
 
   // Add the new points.
   for (i = 0; i < n; ++i) {
-    add(this, xz[i], yz[i], randomNumbers[i]);
+    add(this, xz[i], yz[i], data[i]);
   }
 
   return this;
@@ -1324,12 +1324,12 @@ var tree_cover = function(x, y) {
   return this;
 };
 
-var tree_randomNumbers = function() {
-  var randomNumbers = [];
+var tree_data = function() {
+  var data = [];
   this.visit(function(node) {
-    if (!node.length) do randomNumbers.push(node.randomNumbers); while (node = node.next)
+    if (!node.length) do data.push(node.data); while (node = node.next)
   });
-  return randomNumbers;
+  return data;
 };
 
 var tree_extent = function(_) {
@@ -1347,7 +1347,7 @@ var Quad = function(node, x0, y0, x1, y1) {
 };
 
 var tree_find = function(x, y, radius) {
-  var randomNumbers,
+  var data,
       x0 = this._x0,
       y0 = this._y0,
       x1,
@@ -1400,19 +1400,19 @@ var tree_find = function(x, y, radius) {
 
     // Visit this point. (Visiting coincident points isn’t necessary!)
     else {
-      var dx = x - +this._x.call(null, node.randomNumbers),
-          dy = y - +this._y.call(null, node.randomNumbers),
+      var dx = x - +this._x.call(null, node.data),
+          dy = y - +this._y.call(null, node.data),
           d2 = dx * dx + dy * dy;
       if (d2 < radius) {
         var d = Math.sqrt(radius = d2);
         x0 = x - d, y0 = y - d;
         x3 = x + d, y3 = y + d;
-        randomNumbers = node.randomNumbers;
+        data = node.data;
       }
     }
   }
 
-  return randomNumbers;
+  return data;
 };
 
 var tree_remove = function(d) {
@@ -1450,7 +1450,7 @@ var tree_remove = function(d) {
   }
 
   // Find the point to remove.
-  while (node.randomNumbers !== d) if (!(previous = node, node = node.next)) return this;
+  while (node.data !== d) if (!(previous = node, node = node.next)) return this;
   if (next = node.next) delete node.next;
 
   // If there are multiple coincident points, remove just the point.
@@ -1473,8 +1473,8 @@ var tree_remove = function(d) {
   return this;
 };
 
-function removeAll(randomNumbers) {
-  for (var i = 0, n = randomNumbers.length; i < n; ++i) this.remove(randomNumbers[i]);
+function removeAll(data) {
+  for (var i = 0, n = data.length; i < n; ++i) this.remove(data[i]);
   return this;
 }
 
@@ -1557,8 +1557,8 @@ function Quadtree(x, y, x0, y0, x1, y1) {
 }
 
 function leaf_copy(leaf) {
-  var copy = {randomNumbers: leaf.randomNumbers}, next = copy;
-  while (leaf = leaf.next) next = next.next = {randomNumbers: leaf.randomNumbers};
+  var copy = {data: leaf.data}, next = copy;
+  while (leaf = leaf.next) next = next.next = {data: leaf.data};
   return copy;
 }
 
@@ -1590,7 +1590,7 @@ treeProto.copy = function() {
 treeProto.add = tree_add;
 treeProto.addAll = addAll;
 treeProto.cover = tree_cover;
-treeProto.randomNumbers = tree_randomNumbers;
+treeProto.data = tree_data;
 treeProto.extent = tree_extent;
 treeProto.find = tree_find;
 treeProto.remove = tree_remove;
@@ -1612,7 +1612,7 @@ function Queue(size) {
   this._call =
   this._error = null;
   this._tasks = [];
-  this._randomNumbers = [];
+  this._data = [];
   this._waiting =
   this._active =
   this._ended =
@@ -1653,7 +1653,7 @@ function poke(q) {
     try { start(q); } // let the current task complete
     catch (e) {
       if (q._tasks[q._ended + q._active - 1]) abort(q, e); // task errored synchronously
-      else if (!q._randomNumbers) throw e; // await callback errored synchronously
+      else if (!q._data) throw e; // await callback errored synchronously
     }
   }
 }
@@ -1681,7 +1681,7 @@ function end(q, i) {
     if (e != null) {
       abort(q, e);
     } else {
-      q._randomNumbers[i] = r;
+      q._data[i] = r;
       if (q._waiting) poke(q);
       else maybeNotify(q);
     }
@@ -1691,7 +1691,7 @@ function end(q, i) {
 function abort(q, e) {
   var i = q._tasks.length, t;
   q._error = e; // ignore active callbacks
-  q._randomNumbers = undefined; // allow gc
+  q._data = undefined; // allow gc
   q._waiting = NaN; // prevent starting
 
   while (--i >= 0) {
@@ -1710,8 +1710,8 @@ function abort(q, e) {
 
 function maybeNotify(q) {
   if (!q._active && q._call) {
-    var d = q._randomNumbers;
-    q._randomNumbers = undefined; // allow gc
+    var d = q._data;
+    q._data = undefined; // allow gc
     q._call(q._error, d);
   }
 }
@@ -2039,9 +2039,9 @@ var line = function() {
       curve = curveLinear,
       output = null;
 
-  function line(randomNumbers) {
+  function line(data) {
     var i,
-        n = randomNumbers.length,
+        n = data.length,
         d,
         defined0 = false,
         buffer;
@@ -2049,11 +2049,11 @@ var line = function() {
     if (context == null) output = curve(buffer = path());
 
     for (i = 0; i <= n; ++i) {
-      if (!(i < n && defined(d = randomNumbers[i], i, randomNumbers)) === defined0) {
+      if (!(i < n && defined(d = data[i], i, data)) === defined0) {
         if (defined0 = !defined0) output.lineStart();
         else output.lineEnd();
       }
-      if (defined0) output.point(+x$$1(d, i, randomNumbers), +y$$1(d, i, randomNumbers));
+      if (defined0) output.point(+x$$1(d, i, data), +y$$1(d, i, data));
     }
 
     if (buffer) return output = null, buffer + "" || null;
@@ -2092,11 +2092,11 @@ var area$1 = function() {
       curve = curveLinear,
       output = null;
 
-  function area(randomNumbers) {
+  function area(data) {
     var i,
         j,
         k,
-        n = randomNumbers.length,
+        n = data.length,
         d,
         defined0 = false,
         buffer,
@@ -2106,7 +2106,7 @@ var area$1 = function() {
     if (context == null) output = curve(buffer = path());
 
     for (i = 0; i <= n; ++i) {
-      if (!(i < n && defined(d = randomNumbers[i], i, randomNumbers)) === defined0) {
+      if (!(i < n && defined(d = data[i], i, data)) === defined0) {
         if (defined0 = !defined0) {
           j = i;
           output.areaStart();
@@ -2122,8 +2122,8 @@ var area$1 = function() {
         }
       }
       if (defined0) {
-        x0z[i] = +x0(d, i, randomNumbers), y0z[i] = +y0(d, i, randomNumbers);
-        output.point(x1 ? +x1(d, i, randomNumbers) : x0z[i], y1 ? +y1(d, i, randomNumbers) : y0z[i]);
+        x0z[i] = +x0(d, i, data), y0z[i] = +y0(d, i, data);
+        output.point(x1 ? +x1(d, i, data) : x0z[i], y1 ? +y1(d, i, data) : y0z[i]);
       }
     }
 
@@ -2202,9 +2202,9 @@ var pie = function() {
       endAngle = constant$2(tau$2),
       padAngle = constant$2(0);
 
-  function pie(randomNumbers) {
+  function pie(data) {
     var i,
-        n = randomNumbers.length,
+        n = data.length,
         j,
         k,
         sum = 0,
@@ -2218,19 +2218,19 @@ var pie = function() {
         v;
 
     for (i = 0; i < n; ++i) {
-      if ((v = arcs[index[i] = i] = +value(randomNumbers[i], i, randomNumbers)) > 0) {
+      if ((v = arcs[index[i] = i] = +value(data[i], i, data)) > 0) {
         sum += v;
       }
     }
 
-    // Optionally sort the arcs by previously-computed values or by randomNumbers.
+    // Optionally sort the arcs by previously-computed values or by data.
     if (sortValues != null) index.sort(function(i, j) { return sortValues(arcs[i], arcs[j]); });
-    else if (sort != null) index.sort(function(i, j) { return sort(randomNumbers[i], randomNumbers[j]); });
+    else if (sort != null) index.sort(function(i, j) { return sort(data[i], data[j]); });
 
-    // Compute the arcs! They are stored in the original randomNumbers's order.
+    // Compute the arcs! They are stored in the original data's order.
     for (i = 0, k = sum ? (da - n * pa) / sum : 0; i < n; ++i, a0 = a1) {
       j = index[i], v = arcs[j], a1 = a0 + (v > 0 ? v * k : 0) + pa, arcs[j] = {
-        randomNumbers: randomNumbers[j],
+        data: data[j],
         index: i,
         value: v,
         startAngle: a0,
@@ -3356,18 +3356,18 @@ var stack = function() {
       offset = none,
       value = stackValue;
 
-  function stack(randomNumbers) {
+  function stack(data) {
     var kz = keys.apply(this, arguments),
         i,
-        m = randomNumbers.length,
+        m = data.length,
         n = kz.length,
         sz = new Array(n),
         oz;
 
     for (i = 0; i < n; ++i) {
       for (var ki = kz[i], si = sz[i] = new Array(m), j = 0, sij; j < m; ++j) {
-        si[j] = sij = [0, +value(randomNumbers[j], ki, j, randomNumbers)];
-        sij.randomNumbers = randomNumbers[j];
+        si[j] = sij = [0, +value(data[j], ki, j, data)];
+        sij.data = data[j];
       }
       si.key = ki;
     }
@@ -4822,28 +4822,28 @@ var request = function(url, callback) {
     },
 
     // Alias for send("GET", …).
-    get: function(randomNumbers, callback) {
-      return request.send("GET", randomNumbers, callback);
+    get: function(data, callback) {
+      return request.send("GET", data, callback);
     },
 
     // Alias for send("POST", …).
-    post: function(randomNumbers, callback) {
-      return request.send("POST", randomNumbers, callback);
+    post: function(data, callback) {
+      return request.send("POST", data, callback);
     },
 
     // If callback is non-null, it will be used for error and load events.
-    send: function(method, randomNumbers, callback) {
+    send: function(method, data, callback) {
       xhr.open(method, url, true, user, password);
       if (mimeType != null && !headers.has("accept")) headers.set("accept", mimeType + ",*/*");
       if (xhr.setRequestHeader) headers.each(function(value, name) { xhr.setRequestHeader(name, value); });
       if (mimeType != null && xhr.overrideMimeType) xhr.overrideMimeType(mimeType);
       if (responseType != null) xhr.responseType = responseType;
       if (timeout > 0) xhr.timeout = timeout;
-      if (callback == null && typeof randomNumbers === "function") callback = randomNumbers, randomNumbers = null;
+      if (callback == null && typeof data === "function") callback = data, data = null;
       if (callback != null && callback.length === 1) callback = fixCallback(callback);
       if (callback != null) request.on("error", callback).on("load", function(xhr) { callback(null, xhr); });
       event.call("beforesend", request, xhr);
-      xhr.send(randomNumbers == null ? null : randomNumbers);
+      xhr.send(data == null ? null : data);
       return request;
     },
 
@@ -7236,7 +7236,7 @@ function contextListener(listener, index, group) {
     var event0 = exports.event; // Events can be reentrant (e.g., focus).
     exports.event = event1;
     try {
-      listener.call(this, this.__randomNumbers__, index, group);
+      listener.call(this, this.__data__, index, group);
     } finally {
       exports.event = event0;
     }
@@ -7357,8 +7357,8 @@ var selection_select = function(select) {
 
   for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = new Array(n), node, subnode, i = 0; i < n; ++i) {
-      if ((node = group[i]) && (subnode = select.call(node, node.__randomNumbers__, i, group))) {
-        if ("__randomNumbers__" in node) subnode.__randomNumbers__ = node.__randomNumbers__;
+      if ((node = group[i]) && (subnode = select.call(node, node.__data__, i, group))) {
+        if ("__data__" in node) subnode.__data__ = node.__data__;
         subgroup[i] = subnode;
       }
     }
@@ -7383,7 +7383,7 @@ var selection_selectAll = function(select) {
   for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, node, i = 0; i < n; ++i) {
       if (node = group[i]) {
-        subgroups.push(select.call(node, node.__randomNumbers__, i, group));
+        subgroups.push(select.call(node, node.__data__, i, group));
         parents.push(node);
       }
     }
@@ -7397,7 +7397,7 @@ var selection_filter = function(match) {
 
   for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = [], node, i = 0; i < n; ++i) {
-      if ((node = group[i]) && match.call(node, node.__randomNumbers__, i, group)) {
+      if ((node = group[i]) && match.call(node, node.__data__, i, group)) {
         subgroup.push(node);
       }
     }
@@ -7419,7 +7419,7 @@ function EnterNode(parent, datum) {
   this.namespaceURI = parent.namespaceURI;
   this._next = null;
   this._parent = parent;
-  this.__randomNumbers__ = datum;
+  this.__data__ = datum;
 }
 
 EnterNode.prototype = {
@@ -7438,21 +7438,21 @@ var constant$5 = function(x) {
 
 var keyPrefix = "$"; // Protect against keys like “__proto__”.
 
-function bindIndex(parent, group, enter, update, exit, randomNumbers) {
+function bindIndex(parent, group, enter, update, exit, data) {
   var i = 0,
       node,
       groupLength = group.length,
-      randomNumbersLength = randomNumbers.length;
+      dataLength = data.length;
 
   // Put any non-null nodes that fit into update.
   // Put any null nodes into enter.
-  // Put any remaining randomNumbers into enter.
-  for (; i < randomNumbersLength; ++i) {
+  // Put any remaining data into enter.
+  for (; i < dataLength; ++i) {
     if (node = group[i]) {
-      node.__randomNumbers__ = randomNumbers[i];
+      node.__data__ = data[i];
       update[i] = node;
     } else {
-      enter[i] = new EnterNode(parent, randomNumbers[i]);
+      enter[i] = new EnterNode(parent, data[i]);
     }
   }
 
@@ -7464,12 +7464,12 @@ function bindIndex(parent, group, enter, update, exit, randomNumbers) {
   }
 }
 
-function bindKey(parent, group, enter, update, exit, randomNumbers, key) {
+function bindKey(parent, group, enter, update, exit, data, key) {
   var i,
       node,
       nodeByKeyValue = {},
       groupLength = group.length,
-      randomNumbersLength = randomNumbers.length,
+      dataLength = data.length,
       keyValues = new Array(groupLength),
       keyValue;
 
@@ -7477,7 +7477,7 @@ function bindKey(parent, group, enter, update, exit, randomNumbers, key) {
   // If multiple nodes have the same key, the duplicates are added to exit.
   for (i = 0; i < groupLength; ++i) {
     if (node = group[i]) {
-      keyValues[i] = keyValue = keyPrefix + key.call(node, node.__randomNumbers__, i, group);
+      keyValues[i] = keyValue = keyPrefix + key.call(node, node.__data__, i, group);
       if (keyValue in nodeByKeyValue) {
         exit[i] = node;
       } else {
@@ -7489,18 +7489,18 @@ function bindKey(parent, group, enter, update, exit, randomNumbers, key) {
   // Compute the key for each datum.
   // If there a node associated with this key, join and add it to update.
   // If there is not (or the key is a duplicate), add it to enter.
-  for (i = 0; i < randomNumbersLength; ++i) {
-    keyValue = keyPrefix + key.call(parent, randomNumbers[i], i, randomNumbers);
+  for (i = 0; i < dataLength; ++i) {
+    keyValue = keyPrefix + key.call(parent, data[i], i, data);
     if (node = nodeByKeyValue[keyValue]) {
       update[i] = node;
-      node.__randomNumbers__ = randomNumbers[i];
+      node.__data__ = data[i];
       nodeByKeyValue[keyValue] = null;
     } else {
-      enter[i] = new EnterNode(parent, randomNumbers[i]);
+      enter[i] = new EnterNode(parent, data[i]);
     }
   }
 
-  // Add any remaining nodes that were not bound to randomNumbers to exit.
+  // Add any remaining nodes that were not bound to data to exit.
   for (i = 0; i < groupLength; ++i) {
     if ((node = group[i]) && (nodeByKeyValue[keyValues[i]] === node)) {
       exit[i] = node;
@@ -7508,11 +7508,11 @@ function bindKey(parent, group, enter, update, exit, randomNumbers, key) {
   }
 }
 
-var selection_randomNumbers = function(value, key) {
+var selection_data = function(value, key) {
   if (!value) {
-    randomNumbers = new Array(this.size()), j = -1;
-    this.each(function(d) { randomNumbers[++j] = d; });
-    return randomNumbers;
+    data = new Array(this.size()), j = -1;
+    this.each(function(d) { data[++j] = d; });
+    return data;
   }
 
   var bind = key ? bindKey : bindIndex,
@@ -7525,21 +7525,21 @@ var selection_randomNumbers = function(value, key) {
     var parent = parents[j],
         group = groups[j],
         groupLength = group.length,
-        randomNumbers = value.call(parent, parent && parent.__randomNumbers__, j, parents),
-        randomNumbersLength = randomNumbers.length,
-        enterGroup = enter[j] = new Array(randomNumbersLength),
-        updateGroup = update[j] = new Array(randomNumbersLength),
+        data = value.call(parent, parent && parent.__data__, j, parents),
+        dataLength = data.length,
+        enterGroup = enter[j] = new Array(dataLength),
+        updateGroup = update[j] = new Array(dataLength),
         exitGroup = exit[j] = new Array(groupLength);
 
-    bind(parent, group, enterGroup, updateGroup, exitGroup, randomNumbers, key);
+    bind(parent, group, enterGroup, updateGroup, exitGroup, data, key);
 
     // Now connect the enter nodes to their following update node, such that
     // appendChild can insert the materialized enter node before this node,
     // rather than at the end of the parent node.
-    for (var i0 = 0, i1 = 0, previous, next; i0 < randomNumbersLength; ++i0) {
+    for (var i0 = 0, i1 = 0, previous, next; i0 < dataLength; ++i0) {
       if (previous = enterGroup[i0]) {
         if (i0 >= i1) i1 = i0 + 1;
-        while (!(next = updateGroup[i1]) && ++i1 < randomNumbersLength);
+        while (!(next = updateGroup[i1]) && ++i1 < dataLength);
         previous._next = next || null;
       }
     }
@@ -7590,7 +7590,7 @@ var selection_sort = function(compare) {
   if (!compare) compare = ascending$2;
 
   function compareNode(a, b) {
-    return a && b ? compare(a.__randomNumbers__, b.__randomNumbers__) : !a - !b;
+    return a && b ? compare(a.__data__, b.__data__) : !a - !b;
   }
 
   for (var groups = this._groups, m = groups.length, sortgroups = new Array(m), j = 0; j < m; ++j) {
@@ -7648,7 +7648,7 @@ var selection_each = function(callback) {
 
   for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
     for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
-      if (node = group[i]) callback.call(node, node.__randomNumbers__, i, group);
+      if (node = group[i]) callback.call(node, node.__data__, i, group);
     }
   }
 
@@ -7952,8 +7952,8 @@ var selection_remove = function() {
 
 var selection_datum = function(value) {
   return arguments.length
-      ? this.property("__randomNumbers__", value)
-      : this.node().__randomNumbers__;
+      ? this.property("__data__", value)
+      : this.node().__data__;
 };
 
 function dispatchEvent(node, type, params) {
@@ -8005,7 +8005,7 @@ Selection.prototype = selection.prototype = {
   select: selection_select,
   selectAll: selection_selectAll,
   filter: selection_filter,
-  randomNumbers: selection_randomNumbers,
+  data: selection_data,
   enter: selection_enter,
   exit: selection_exit,
   merge: selection_merge,
@@ -8152,7 +8152,7 @@ function create(node, id, self) {
       if (o.state === RUNNING) {
         o.state = ENDED;
         o.timer.stop();
-        o.on.call("interrupt", node, node.__randomNumbers__, o.index, o.group);
+        o.on.call("interrupt", node, node.__data__, o.index, o.group);
         delete schedules[i];
       }
 
@@ -8181,14 +8181,14 @@ function create(node, id, self) {
     // Dispatch the start event.
     // Note this must be done before the tween are initialized.
     self.state = STARTING;
-    self.on.call("start", node, node.__randomNumbers__, self.index, self.group);
+    self.on.call("start", node, node.__data__, self.index, self.group);
     if (self.state !== STARTING) return; // interrupted
     self.state = STARTED;
 
     // Initialize the tween, deleting null tween.
     tween = new Array(n = self.tween.length);
     for (i = 0, j = -1; i < n; ++i) {
-      if (o = self.tween[i].value.call(node, node.__randomNumbers__, self.index, self.group)) {
+      if (o = self.tween[i].value.call(node, node.__data__, self.index, self.group)) {
         tween[++j] = o;
       }
     }
@@ -8206,7 +8206,7 @@ function create(node, id, self) {
 
     // Dispatch the end event.
     if (self.state === ENDING) {
-      self.on.call("end", node, node.__randomNumbers__, self.index, self.group);
+      self.on.call("end", node, node.__data__, self.index, self.group);
       stop();
     }
   }
@@ -8236,7 +8236,7 @@ var interrupt = function(node, name) {
     active = schedule.state === STARTED;
     schedule.state = ENDED;
     schedule.timer.stop();
-    if (active) schedule.on.call("interrupt", node, node.__randomNumbers__, schedule.index, schedule.group);
+    if (active) schedule.on.call("interrupt", node, node.__data__, schedule.index, schedule.group);
     delete schedules[i];
   }
 
@@ -8502,7 +8502,7 @@ var transition_filter = function(match) {
 
   for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = [], node, i = 0; i < n; ++i) {
-      if ((node = group[i]) && match.call(node, node.__randomNumbers__, i, group)) {
+      if ((node = group[i]) && match.call(node, node.__data__, i, group)) {
         subgroup.push(node);
       }
     }
@@ -8580,8 +8580,8 @@ var transition_select = function(select$$1) {
 
   for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = new Array(n), node, subnode, i = 0; i < n; ++i) {
-      if ((node = group[i]) && (subnode = select$$1.call(node, node.__randomNumbers__, i, group))) {
-        if ("__randomNumbers__" in node) subnode.__randomNumbers__ = node.__randomNumbers__;
+      if ((node = group[i]) && (subnode = select$$1.call(node, node.__data__, i, group))) {
+        if ("__data__" in node) subnode.__data__ = node.__data__;
         subgroup[i] = subnode;
         schedule(subgroup[i], name, id, i, subgroup, get$1(node, id));
       }
@@ -8600,7 +8600,7 @@ var transition_selectAll = function(select$$1) {
   for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, node, i = 0; i < n; ++i) {
       if (node = group[i]) {
-        for (var children = select$$1.call(node, node.__randomNumbers__, i, group), child, inherit = get$1(node, id), k = 0, l = children.length; k < l; ++k) {
+        for (var children = select$$1.call(node, node.__data__, i, group), child, inherit = get$1(node, id), k = 0, l = children.length; k < l; ++k) {
           if (child = children[k]) {
             schedule(child, name, id, k, children, inherit);
           }
@@ -8894,8 +8894,8 @@ function axis(orient, scale) {
         range1 = range[range.length - 1] + 0.5,
         position = (scale.bandwidth ? center : identity$5)(scale.copy()),
         selection = context.selection ? context.selection() : context,
-        path = selection.selectAll(".domain").randomNumbers([null]),
-        tick = selection.selectAll(".tick").randomNumbers(values, scale).order(),
+        path = selection.selectAll(".domain").data([null]),
+        tick = selection.selectAll(".tick").data(values, scale).order(),
         tickExit = tick.exit(),
         tickEnter = tick.enter().append("g").attr("class", "tick"),
         line = tick.select("line"),
@@ -9145,7 +9145,7 @@ var node_eachAfter = function(callback) {
 
 var node_sum = function(value) {
   return this.eachAfter(function(node) {
-    var sum = +value(node.randomNumbers) || 0,
+    var sum = +value(node.data) || 0,
         children = node.children,
         i = children && children.length;
     while (--i >= 0) sum += children[i].value;
@@ -9228,9 +9228,9 @@ var node_links = function() {
   return links;
 };
 
-function hierarchy(randomNumbers, children) {
-  var root = new Node(randomNumbers),
-      valued = +randomNumbers.value && (root.value = randomNumbers.value),
+function hierarchy(data, children) {
+  var root = new Node(data),
+      valued = +data.value && (root.value = data.value),
       node,
       nodes = [root],
       child,
@@ -9241,8 +9241,8 @@ function hierarchy(randomNumbers, children) {
   if (children == null) children = defaultChildren;
 
   while (node = nodes.pop()) {
-    if (valued) node.value = +node.randomNumbers.value;
-    if ((childs = children(node.randomNumbers)) && (n = childs.length)) {
+    if (valued) node.value = +node.data.value;
+    if ((childs = children(node.data)) && (n = childs.length)) {
       node.children = new Array(n);
       for (i = n - 1; i >= 0; --i) {
         nodes.push(child = node.children[i] = new Node(childs[i]));
@@ -9256,15 +9256,15 @@ function hierarchy(randomNumbers, children) {
 }
 
 function node_copy() {
-  return hierarchy(this).eachBefore(copyrandomNumbers);
+  return hierarchy(this).eachBefore(copyData);
 }
 
 function defaultChildren(d) {
   return d.children;
 }
 
-function copyrandomNumbers(node) {
-  node.randomNumbers = node.randomNumbers.randomNumbers;
+function copyData(node) {
+  node.data = node.data.data;
 }
 
 function computeHeight(node) {
@@ -9273,8 +9273,8 @@ function computeHeight(node) {
   while ((node = node.parent) && (node.height < ++height));
 }
 
-function Node(randomNumbers) {
-  this.randomNumbers = randomNumbers;
+function Node(data) {
+  this.data = data;
   this.depth =
   this.height = 0;
   this.parent = null;
@@ -9735,10 +9735,10 @@ var stratify = function() {
   var id = defaultId,
       parentId = defaultParentId;
 
-  function stratify(randomNumbers) {
+  function stratify(data) {
     var d,
         i,
-        n = randomNumbers.length,
+        n = data.length,
         root,
         parent,
         node,
@@ -9748,15 +9748,15 @@ var stratify = function() {
         nodeByKey = {};
 
     for (i = 0; i < n; ++i) {
-      d = randomNumbers[i], node = nodes[i] = new Node(d);
-      if ((nodeId = id(d, i, randomNumbers)) != null && (nodeId += "")) {
+      d = data[i], node = nodes[i] = new Node(d);
+      if ((nodeId = id(d, i, data)) != null && (nodeId += "")) {
         nodeKey = keyPrefix$1 + (node.id = nodeId);
         nodeByKey[nodeKey] = nodeKey in nodeByKey ? ambiguous : node;
       }
     }
 
     for (i = 0; i < n; ++i) {
-      node = nodes[i], nodeId = parentId(randomNumbers[i], i, randomNumbers);
+      node = nodes[i], nodeId = parentId(data[i], i, data);
       if (nodeId == null || !(nodeId += "")) {
         if (root) throw new Error("multiple roots");
         root = node;
@@ -10356,11 +10356,11 @@ var collide = function(radius) {
     }
 
     function apply(quad, x0, y0, x1, y1) {
-      var randomNumbers = quad.randomNumbers, rj = quad.r, r = ri + rj;
-      if (randomNumbers) {
-        if (randomNumbers.index > i) {
-          var x = xi - randomNumbers.x - randomNumbers.vx,
-              y = yi - randomNumbers.y - randomNumbers.vy,
+      var data = quad.data, rj = quad.r, r = ri + rj;
+      if (data) {
+        if (data.index > i) {
+          var x = xi - data.x - data.vx,
+              y = yi - data.y - data.vy,
               l = x * x + y * y;
           if (l < r * r) {
             if (x === 0) x = jiggle(), l += x * x;
@@ -10368,8 +10368,8 @@ var collide = function(radius) {
             l = (r - (l = Math.sqrt(l))) / l * strength;
             node.vx += (x *= l) * (r = (rj *= rj) / (ri2 + rj));
             node.vy += (y *= l) * r;
-            randomNumbers.vx -= x * (r = 1 - r);
-            randomNumbers.vy -= y * r;
+            data.vx -= x * (r = 1 - r);
+            data.vy -= y * r;
           }
         }
         return;
@@ -10379,7 +10379,7 @@ var collide = function(radius) {
   }
 
   function prepare(quad) {
-    if (quad.randomNumbers) return quad.r = radii[quad.randomNumbers.index];
+    if (quad.data) return quad.r = radii[quad.data.index];
     for (var i = quad.r = 0; i < 4; ++i) {
       if (quad[i] && quad[i].r > quad.r) {
         quad.r = quad[i].r;
@@ -10709,9 +10709,9 @@ var manyBody = function() {
     // For leaf nodes, accumulate forces from coincident quadrants.
     else {
       q = quad;
-      q.x = q.randomNumbers.x;
-      q.y = q.randomNumbers.y;
-      do strength += strengths[q.randomNumbers.index];
+      q.x = q.data.x;
+      q.y = q.data.y;
+      do strength += strengths[q.data.index];
       while (q = q.next);
     }
 
@@ -10743,14 +10743,14 @@ var manyBody = function() {
     else if (quad.length || l >= distanceMax2) return;
 
     // Limit forces for very close nodes; randomize direction if coincident.
-    if (quad.randomNumbers !== node || quad.next) {
+    if (quad.data !== node || quad.next) {
       if (x$$1 === 0) x$$1 = jiggle(), l += x$$1 * x$$1;
       if (y$$1 === 0) y$$1 = jiggle(), l += y$$1 * y$$1;
       if (l < distanceMin2) l = Math.sqrt(distanceMin2 * l);
     }
 
-    do if (quad.randomNumbers !== node) {
-      w = strengths[quad.randomNumbers.index] * alpha / l;
+    do if (quad.data !== node) {
+      w = strengths[quad.data.index] * alpha / l;
       node.vx += x$$1 * w;
       node.vy += y$$1 * w;
     } while (quad = quad.next);
@@ -11932,7 +11932,7 @@ Diagram.prototype = {
 
     return this.cells.map(function(cell) {
       var polygon = cell.halfedges.map(function(i) { return cellHalfedgeStart(cell, edges[i]); });
-      polygon.randomNumbers = cell.site.randomNumbers;
+      polygon.data = cell.site.data;
       return polygon;
     });
   },
@@ -11955,7 +11955,7 @@ Diagram.prototype = {
         e1 = edges[halfedges[j]];
         s1 = e1.left === site ? e1.right : e1.left;
         if (i < s0.index && i < s1.index && triangleArea(site, s0, s1) < 0) {
-          triangles.push([site.randomNumbers, s0.randomNumbers, s1.randomNumbers]);
+          triangles.push([site.data, s0.data, s1.data]);
         }
       }
     });
@@ -11968,8 +11968,8 @@ Diagram.prototype = {
       return edge.right;
     }).map(function(edge) {
       return {
-        source: edge.left.randomNumbers,
-        target: edge.right.randomNumbers
+        source: edge.left.data,
+        target: edge.right.data
       };
     });
   }
@@ -11980,25 +11980,25 @@ var voronoi = function() {
       y$$1 = y$4,
       extent = null;
 
-  function voronoi(randomNumbers) {
-    return new Diagram(randomNumbers.map(function(d, i) {
-      var s = [Math.round(x$$1(d, i, randomNumbers) / epsilon$3) * epsilon$3, Math.round(y$$1(d, i, randomNumbers) / epsilon$3) * epsilon$3];
+  function voronoi(data) {
+    return new Diagram(data.map(function(d, i) {
+      var s = [Math.round(x$$1(d, i, data) / epsilon$3) * epsilon$3, Math.round(y$$1(d, i, data) / epsilon$3) * epsilon$3];
       s.index = i;
-      s.randomNumbers = d;
+      s.data = d;
       return s;
     }), extent);
   }
 
-  voronoi.polygons = function(randomNumbers) {
-    return voronoi(randomNumbers).polygons();
+  voronoi.polygons = function(data) {
+    return voronoi(data).polygons();
   };
 
-  voronoi.links = function(randomNumbers) {
-    return voronoi(randomNumbers).links();
+  voronoi.links = function(data) {
+    return voronoi(data).links();
   };
 
-  voronoi.triangles = function(randomNumbers) {
-    return voronoi(randomNumbers).triangles();
+  voronoi.triangles = function(data) {
+    return voronoi(data).triangles();
   };
 
   voronoi.x = function(_) {
@@ -12602,7 +12602,7 @@ function brush$1(dim) {
     var overlay = group
         .property("__brush", initialize)
       .selectAll(".overlay")
-      .randomNumbers([type$1("overlay")]);
+      .data([type$1("overlay")]);
 
     overlay.enter().append("rect")
         .attr("class", "overlay")
@@ -12619,7 +12619,7 @@ function brush$1(dim) {
         });
 
     group.selectAll(".selection")
-      .randomNumbers([type$1("selection")])
+      .data([type$1("selection")])
       .enter().append("rect")
         .attr("class", "selection")
         .attr("cursor", cursors.selection)
@@ -12629,7 +12629,7 @@ function brush$1(dim) {
         .attr("shape-rendering", "crispEdges");
 
     var handle = group.selectAll(".handle")
-      .randomNumbers(dim.handles, function(d) { return d.type; });
+      .data(dim.handles, function(d) { return d.type; });
 
     handle.exit().remove();
 
@@ -12752,7 +12752,7 @@ function brush$1(dim) {
     if (!filter.apply(this, arguments)) return;
 
     var that = this,
-        type = exports.event.target.__randomNumbers__.type,
+        type = exports.event.target.__data__.type,
         mode = (exports.event.metaKey ? type = "overlay" : type) === "selection" ? MODE_DRAG : (exports.event.altKey ? MODE_CENTER : MODE_HANDLE),
         signX = dim === Y ? null : signsX[type],
         signY = dim === X ? null : signsY[type],
