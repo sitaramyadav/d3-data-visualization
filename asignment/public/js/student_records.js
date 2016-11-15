@@ -1,5 +1,5 @@
 
-var data = [
+var studentRecords = [
 	{name:'ramesh',subject:'maths',score:87},
 	{name:'suresh',subject:'maths',score:45},
 	{name:'pokemon',subject:'english',score:65},
@@ -16,46 +16,46 @@ var data = [
 
 
 
-//
-// var  displayChart = function(xScale){
-// 	var display = d3.select('.container');
-//
-// 	var existingSelection = display.selectAll('.bar');
-//
-// 	var newSelection = existingSelection.data(data,function(d){
-// 		return d.index;})
-// 		.enter()
-//
-// 	var removedSelection = existingSelection.data(data,function(d){return d.index}).exit()
-//
-// 	newSelection.append('div')
-// 		.style('width',function(d){return xScale(d.val)+'px';})
-// 		.attr('class','bar')
-// 		.style('opacity',function(d){return d.val/100;})
-// 		.text(function(d){return d.val;})
-//
-// 	removedSelection.remove();
-// }
+var  updateChart = function(xScale){
+	var display = d3.select('.container');
+
+	var existingSelection = display.selectAll('.bar');
 
 
-function createChart(){
-	// Update…
-	var p = d3.select("body")
-		.selectAll("p")
-		.data([4, 8, 15, 16, 23, 42])
-		.text(function(d) { return d; });
+	var newSelection = existingSelection.data(studentRecords)
+		.enter()
 
-// Enter…
-	p.enter().append("p")
-		.text(function(d) { return d; });
+	var removedSelection = existingSelection.data(studentRecords,function(d){return d.name+ ' '+d.score}).exit()
 
-// Exit…
-	p.exit().remove();
+	newSelection.append('div')
+		.style('width',function(d){return xScale(d.score)+'px';})
+		.attr('class','bar')
+		.style('opacity',function(d){return d.score/100;})
+		.text(function(d){return d.name+ ' '+d.score;})
 
+	removedSelection.remove();
+}
+
+
+var createChart = function (){
 	var xScale = d3.scaleLinear()
 		.domain([0,100])
 		.range([5,700]);
 
+	var display = d3.select('.container');
+
+	var existingSelection = display.selectAll('.bar').data(studentRecords,function(d){return d.name+ ' '+d.score;});
+
+
+	var newSelection = existingSelection.data(studentRecords);
+
+	newSelection.append('div')
+		.style('width',function(d){return xScale(d.score)+'px';})
+		.style('opacity',function(d){return d.score/100;})
+		.attr('class','bar')
+		.text(function(d){return d.score;})
+
+	setInterval(function(){updateChart(xScale)},1000)
 
 }
 
