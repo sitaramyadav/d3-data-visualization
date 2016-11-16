@@ -15,32 +15,53 @@ var studentRecords = [
 ]
 
 
+var xScale = d3.scaleLinear()
+	.domain([0,100])
+	.range([5,700]);
 
-var  updateChart = function(xScale){
+
+var  updateChart = function(xScale,studentRecords){
+
 	var display = d3.select('.container');
 
 	var existingSelection = display.selectAll('.bar');
-
-
 	var newSelection = existingSelection.data(studentRecords)
 		.enter()
 
 	var removedSelection = existingSelection.data(studentRecords,function(d){return d.name+ ' '+d.score}).exit()
-
 	newSelection.append('div')
 		.style('width',function(d){return xScale(d.score)+'px';})
 		.attr('class','bar')
 		.style('opacity',function(d){return d.score/100;})
 		.text(function(d){return d.name+ ' '+d.score;})
 
+
 	removedSelection.remove();
 }
 
 
-var createChart = function (){
-	var xScale = d3.scaleLinear()
-		.domain([0,100])
-		.range([5,700]);
+var sortByName = function(){
+	var selection = d3.selectAll('.bar')
+	selection.sort(function(x,y){
+		return d3.ascending(x['name'],y['name'])
+	});
+}
+
+var sortBySubject = function(){
+	var selection = d3.selectAll('.bar')
+	selection.sort(function(x,y){
+		return d3.ascending(x['subject'],y['subject'])
+	});
+}
+
+var sortByScore = function(){
+	var selection = d3.selectAll('.bar')
+	selection.sort(function(x,y){
+		return d3.ascending(x['score'],y['score'])
+	});
+}
+
+var displayChart = function (){
 
 	var display = d3.select('.container');
 
@@ -57,10 +78,11 @@ var createChart = function (){
 		.style('opacity',function(d){return d.score/100;})
 		.attr('class','bar')
 		.text(function(d){return d.score;})
-
-	setInterval(function(){updateChart(xScale)},1000)
-
+	updateChart(xScale,studentRecords);
 }
 
+var createChart = function (){
+	displayChart();
+}
 
 window.load= createChart();
