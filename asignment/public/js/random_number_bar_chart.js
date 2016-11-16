@@ -19,11 +19,11 @@ var  updateChart = function(xScale){
 
 	modifyList(randomNumbers);
 
-	var newSelection = existingSelection.randomNumbers(randomNumbers,function(d){
+	var newSelection = existingSelection.data(randomNumbers,function(d){
 						return d.index;})
 						.enter()
 
-	var removedSelection = existingSelection.randomNumbers(randomNumbers,function(d){return d.index}).exit()
+	var removedSelection = existingSelection.data(randomNumbers,function(d){return d.index}).exit()
 
 	newSelection.append('div')
 		.style('width',function(d){return xScale(d.val)+'px';})
@@ -42,12 +42,12 @@ function createChart(){
 
 	var display = d3.select('.container');
 
-	var existingSelection = display.selectAll('.bar').randomNumbers(randomNumbers,function(d){return d.index;});
+	var existingSelection = display.selectAll('.bar').data(randomNumbers,function(d){return d.index;});
 	console.log(display)
 
 	generateRandomNumbers(randomNumbers);
 
-	var newSelection = existingSelection.randomNumbers(randomNumbers,function(d){return d.index}).enter();
+	var newSelection = existingSelection.data(randomNumbers,function(d){return d.index}).enter();
 
 	newSelection.append('div')
 		.style('width',function(d){return xScale(d.val)+'px';})
